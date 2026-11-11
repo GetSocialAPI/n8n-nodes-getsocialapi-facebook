@@ -1,0 +1,15 @@
+{
+  "operations": [
+    "resolve",
+    "resolveProfile",
+    "overview",
+    "members",
+    "groupPosts",
+    "contacts",
+    "posts",
+    "feed",
+    "followers",
+    "followings",
+    "friends"
+  ]
+}
