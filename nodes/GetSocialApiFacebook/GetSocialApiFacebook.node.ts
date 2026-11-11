@@ -1,5 +1,5 @@
 import type { IExecuteFunctions, INodeExecutionData, INodeType, INodeTypeDescription, IHttpRequestOptions } from 'n8n-workflow';
-import { ApplicationError, NodeApiError, NodeConnectionType, NodeOperationError } from 'n8n-workflow';
+import { ApplicationError, NodeApiError, NodeOperationError } from 'n8n-workflow';
 
 const BASE_URL = "https://api.getsocialapi.com/fb";
 const OPERATIONS: Record<string, { path: string; fields: string[] }> = {
@@ -95,7 +95,7 @@ export class GetSocialApiFacebook implements INodeType {
  icon: 'file:getsocialapi.svg', usableAsTool: true, group: ['transform'], version: 1,
  description: 'Retrieve Facebook data using GetSocialAPI',
  defaults: {name:'GetSocialAPI Facebook'},
- inputs: [NodeConnectionType.Main], outputs: [NodeConnectionType.Main],
+ inputs: ['main'], outputs: ['main'],
  credentials: [{name:'getSocialApiFacebookApi',required:true}],
  properties: [
   {
@@ -491,7 +491,6 @@ export class GetSocialApiFacebook implements INodeType {
      if(!/^\d{1,20}$/.test(id)) throw new NodeOperationError(this.getNode(),'Feed ID must be numeric',{itemIndex:i});
      qs[type === 'group'?'group_id':'user_id'] = id;
     }
-    if(operation === 'following' && "facebook" === 'instagram' && qs.count === undefined) qs.count=25;
     const request: IHttpRequestOptions = {method:'GET',url:BASE_URL+path,qs,json:true,timeout:30000};
     const response: unknown = await this.helpers.httpRequestWithAuthentication.call(this,'getSocialApiFacebookApi',request);
     const json = response && typeof response === 'object' && !Array.isArray(response) ? response as INodeExecutionData['json'] : {data:response} as INodeExecutionData['json'];
@@ -499,7 +498,7 @@ export class GetSocialApiFacebook implements INodeType {
    } catch(error){
     if(this.continueOnFail()){output.push({json:{error:error instanceof Error?error.message:String(error)},pairedItem:{item:i}});continue;}
     if(error instanceof NodeOperationError)throw error;
-    throw new NodeApiError(this.getNode(),error as Error,{itemIndex:i});
+    throw new NodeApiError(this.getNode(),{message: error instanceof Error ? error.message : String(error)},{itemIndex:i});
    }
   }
   return [output];
