@@ -1,5 +1,5 @@
 import type { IExecuteFunctions, INodeExecutionData, INodeType, INodeTypeDescription, IHttpRequestOptions } from 'n8n-workflow';
-import { ApplicationError, NodeApiError, NodeOperationError } from 'n8n-workflow';
+import { ApplicationError, NodeApiError, NodeOperationError, NodeConnectionTypes } from 'n8n-workflow';
 
 const BASE_URL = "https://api.getsocialapi.com/fb";
 const OPERATIONS: Record<string, { path: string; fields: string[] }> = {
@@ -94,10 +94,36 @@ export class GetSocialApiFacebook implements INodeType {
  displayName: 'GetSocialAPI Facebook', name: 'getSocialApiFacebook',
  icon: 'file:getsocialapi.svg', usableAsTool: true, group: ['transform'], version: 1,
  description: 'Retrieve Facebook data using GetSocialAPI',
+ subtitle: '={{$parameter["resource"] + " / " + $parameter["operation"]}}',
  defaults: {name:'GetSocialAPI Facebook'},
- inputs: ['main'], outputs: ['main'],
+ inputs: [NodeConnectionTypes.Main], outputs: [NodeConnectionTypes.Main],
  credentials: [{name:'getSocialApiFacebookApi',required:true}],
  properties: [
+  {
+    "displayName": "Resource",
+    "name": "resource",
+    "type": "options",
+    "noDataExpression": true,
+    "options": [
+      {
+        "name": "Group",
+        "value": "group"
+      },
+      {
+        "name": "Profile",
+        "value": "profile"
+      },
+      {
+        "name": "Connections",
+        "value": "connections"
+      },
+      {
+        "name": "Feed",
+        "value": "feed"
+      }
+    ],
+    "default": "group"
+  },
   {
     "displayName": "Operation",
     "name": "operation",
@@ -110,12 +136,6 @@ export class GetSocialApiFacebook implements INodeType {
         "value": "resolve",
         "description": "Retrieve data using GetSocialAPI",
         "action": "Resolve Group URL"
-      },
-      {
-        "name": "Resolve Profile URL",
-        "value": "resolveProfile",
-        "description": "Retrieve data using GetSocialAPI",
-        "action": "Resolve Profile URL"
       },
       {
         "name": "Get Group Overview",
@@ -134,6 +154,28 @@ export class GetSocialApiFacebook implements INodeType {
         "value": "groupPosts",
         "description": "Retrieve data using GetSocialAPI",
         "action": "Get Group Posts"
+      }
+    ],
+    "displayOptions": {
+      "show": {
+        "resource": [
+          "group"
+        ]
+      }
+    }
+  },
+  {
+    "displayName": "Operation",
+    "name": "operation",
+    "type": "options",
+    "noDataExpression": true,
+    "default": "resolveProfile",
+    "options": [
+      {
+        "name": "Resolve Profile URL",
+        "value": "resolveProfile",
+        "description": "Retrieve data using GetSocialAPI",
+        "action": "Resolve Profile URL"
       },
       {
         "name": "Get Profile Contacts",
@@ -146,13 +188,23 @@ export class GetSocialApiFacebook implements INodeType {
         "value": "posts",
         "description": "Retrieve data using GetSocialAPI",
         "action": "Get Profile Posts"
-      },
-      {
-        "name": "Get Feed",
-        "value": "feed",
-        "description": "Retrieve data using GetSocialAPI",
-        "action": "Get Feed"
-      },
+      }
+    ],
+    "displayOptions": {
+      "show": {
+        "resource": [
+          "profile"
+        ]
+      }
+    }
+  },
+  {
+    "displayName": "Operation",
+    "name": "operation",
+    "type": "options",
+    "noDataExpression": true,
+    "default": "followers",
+    "options": [
       {
         "name": "Get Followers",
         "value": "followers",
@@ -171,7 +223,36 @@ export class GetSocialApiFacebook implements INodeType {
         "description": "Retrieve data using GetSocialAPI",
         "action": "Get Friends"
       }
-    ]
+    ],
+    "displayOptions": {
+      "show": {
+        "resource": [
+          "connections"
+        ]
+      }
+    }
+  },
+  {
+    "displayName": "Operation",
+    "name": "operation",
+    "type": "options",
+    "noDataExpression": true,
+    "default": "feed",
+    "options": [
+      {
+        "name": "Get Feed",
+        "value": "feed",
+        "description": "Retrieve data using GetSocialAPI",
+        "action": "Get Feed"
+      }
+    ],
+    "displayOptions": {
+      "show": {
+        "resource": [
+          "feed"
+        ]
+      }
+    }
   },
   {
     "displayName": "URL",
@@ -183,6 +264,9 @@ export class GetSocialApiFacebook implements INodeType {
       "show": {
         "operation": [
           "resolve"
+        ],
+        "resource": [
+          "group"
         ]
       }
     }
@@ -197,6 +281,9 @@ export class GetSocialApiFacebook implements INodeType {
       "show": {
         "operation": [
           "resolveProfile"
+        ],
+        "resource": [
+          "profile"
         ]
       }
     }
@@ -211,6 +298,9 @@ export class GetSocialApiFacebook implements INodeType {
       "show": {
         "operation": [
           "overview"
+        ],
+        "resource": [
+          "group"
         ]
       }
     }
@@ -225,6 +315,9 @@ export class GetSocialApiFacebook implements INodeType {
       "show": {
         "operation": [
           "members"
+        ],
+        "resource": [
+          "group"
         ]
       }
     }
@@ -239,6 +332,9 @@ export class GetSocialApiFacebook implements INodeType {
       "show": {
         "operation": [
           "members"
+        ],
+        "resource": [
+          "group"
         ]
       }
     }
@@ -253,6 +349,9 @@ export class GetSocialApiFacebook implements INodeType {
       "show": {
         "operation": [
           "groupPosts"
+        ],
+        "resource": [
+          "group"
         ]
       }
     }
@@ -267,6 +366,9 @@ export class GetSocialApiFacebook implements INodeType {
       "show": {
         "operation": [
           "groupPosts"
+        ],
+        "resource": [
+          "group"
         ]
       }
     }
@@ -281,6 +383,9 @@ export class GetSocialApiFacebook implements INodeType {
       "show": {
         "operation": [
           "contacts"
+        ],
+        "resource": [
+          "profile"
         ]
       }
     }
@@ -295,6 +400,9 @@ export class GetSocialApiFacebook implements INodeType {
       "show": {
         "operation": [
           "posts"
+        ],
+        "resource": [
+          "profile"
         ]
       }
     }
@@ -309,6 +417,9 @@ export class GetSocialApiFacebook implements INodeType {
       "show": {
         "operation": [
           "posts"
+        ],
+        "resource": [
+          "profile"
         ]
       }
     }
@@ -322,6 +433,9 @@ export class GetSocialApiFacebook implements INodeType {
     "displayOptions": {
       "show": {
         "operation": [
+          "feed"
+        ],
+        "resource": [
           "feed"
         ]
       }
@@ -347,6 +461,9 @@ export class GetSocialApiFacebook implements INodeType {
       "show": {
         "operation": [
           "feed"
+        ],
+        "resource": [
+          "feed"
         ]
       }
     }
@@ -360,6 +477,9 @@ export class GetSocialApiFacebook implements INodeType {
     "displayOptions": {
       "show": {
         "operation": [
+          "feed"
+        ],
+        "resource": [
           "feed"
         ]
       }
@@ -379,6 +499,9 @@ export class GetSocialApiFacebook implements INodeType {
       "show": {
         "operation": [
           "feed"
+        ],
+        "resource": [
+          "feed"
         ]
       }
     }
@@ -393,6 +516,9 @@ export class GetSocialApiFacebook implements INodeType {
       "show": {
         "operation": [
           "followers"
+        ],
+        "resource": [
+          "connections"
         ]
       }
     }
@@ -407,6 +533,9 @@ export class GetSocialApiFacebook implements INodeType {
       "show": {
         "operation": [
           "followers"
+        ],
+        "resource": [
+          "connections"
         ]
       }
     }
@@ -421,6 +550,9 @@ export class GetSocialApiFacebook implements INodeType {
       "show": {
         "operation": [
           "followings"
+        ],
+        "resource": [
+          "connections"
         ]
       }
     }
@@ -435,6 +567,9 @@ export class GetSocialApiFacebook implements INodeType {
       "show": {
         "operation": [
           "followings"
+        ],
+        "resource": [
+          "connections"
         ]
       }
     }
@@ -449,6 +584,9 @@ export class GetSocialApiFacebook implements INodeType {
       "show": {
         "operation": [
           "friends"
+        ],
+        "resource": [
+          "connections"
         ]
       }
     }
@@ -463,6 +601,9 @@ export class GetSocialApiFacebook implements INodeType {
       "show": {
         "operation": [
           "friends"
+        ],
+        "resource": [
+          "connections"
         ]
       }
     }
@@ -497,7 +638,7 @@ export class GetSocialApiFacebook implements INodeType {
     output.push({json,pairedItem:{item:i}});
    } catch(error){
     if(this.continueOnFail()){output.push({json:{error:error instanceof Error?error.message:String(error)},pairedItem:{item:i}});continue;}
-    if(error instanceof NodeOperationError)throw error;
+    if(error instanceof NodeOperationError) throw new NodeOperationError(this.getNode(),error.message,{itemIndex:i});
     throw new NodeApiError(this.getNode(),{message: error instanceof Error ? error.message : String(error)},{itemIndex:i});
    }
   }
