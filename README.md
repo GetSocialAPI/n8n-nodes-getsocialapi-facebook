@@ -22,9 +22,27 @@ Community node connecting [n8n](https://n8n.io/) to [GetSocialAPI](https://getso
 2. In n8n, install this community package and create **GetSocialAPI Facebook API** credentials.
 3. Select an operation. No Facebook profile login or cookies are needed.
 
-API key is sent as `X-API-Key`. Operations return raw JSON responses. Cursor fields are available for manual pagination; automatic multi-page iteration is not yet provided.
+The API key is sent as `X-API-Key`. Single-object operations return the API response. List operations return one n8n item per record. Use **Return All** to retrieve all available records, or disable it and set **Limit**. The node follows API cursors internally. Some endpoints only expose one page. Existing workflows using node version 1 retain their original response format and parameters.
 
 See https://getsocialapi.com/docs for full API details.
+
+## Usage example
+
+### Resolve a Facebook group URL
+
+1. Add the **GetSocialAPI Facebook** node and select your API credentials.
+2. Set **Resource** to **Group** and **Operation** to **Resolve Group URL**.
+3. Enter `https://www.facebook.com/groups/freegarden/` as **URL**, then execute the node.
+
+Example output (abbreviated):
+
+```json
+{
+  "group_id": "800246542990860"
+}
+```
+
+Use that ID in **Get Group Members**. Turn off **Return All** and set **Limit** to 5 to retrieve up to five members.
 
 ## Development
 
@@ -37,7 +55,7 @@ npm run dev
 
 ## Release
 
-See PUBLISHING.md. Do not publish until CI and real API tests pass.
+See [PUBLISHING.md](PUBLISHING.md).
 
 ## License
 
